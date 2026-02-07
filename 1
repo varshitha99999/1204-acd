@@ -1,0 +1,62 @@
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    int states, symbols;
+    int transition[10][10];
+    int startState;
+    int finalStates[10], finalCount;
+    char input[50];
+    int currentState;
+    int i, j, isAccepted = 0;
+
+    printf("Enter number of states: ");
+    scanf("%d", &states);
+
+    printf("Enter number of input symbols: ");
+    scanf("%d", &symbols);
+
+    printf("Enter transition table:\n");
+    for (i = 0; i < states; i++) {
+        for (j = 0; j < symbols; j++) {
+            printf("Transition from state %d with input %d: ", i, j);
+            scanf("%d", &transition[i][j]);
+        }
+    }
+
+    printf("Enter start state: ");
+    scanf("%d", &startState);
+
+    printf("Enter number of final states: ");
+    scanf("%d", &finalCount);
+
+    printf("Enter final states:\n");
+    for (i = 0; i < finalCount; i++) {
+        scanf("%d", &finalStates[i]);
+    }
+printf("Enter input string: ");
+    scanf("%s", input);
+
+    currentState = startState;
+
+    for (i = 0; input[i] != '\0'; i++) {
+        int symbol = input[i] - '0';
+        currentState = transition[currentState][symbol];
+    }
+
+
+    for (i = 0; i < finalCount; i++) {
+        if (currentState == finalStates[i]) {
+            isAccepted = 1;
+            break;
+        }
+    }
+
+    if (isAccepted)
+        printf("String ACCEPTED by DFA\n");
+    else
+        printf("String REJECTED by DFA\n");
+
+    return 0;
+}
+
