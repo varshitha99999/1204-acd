@@ -1,0 +1,93 @@
+10 + (0 + 11)0*1
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char s[100];
+    printf("Enter a binary string: ");
+    scanf("%s", s);
+
+    int n = strlen(s);
+    int accepted = 0;
+
+    // Case 1: exactly "10"
+    if (strcmp(s, "10") == 0)
+        accepted = 1;
+    else if (n >= 2) {
+        // Case 2: (0 + 11)0*1
+        if (s[0] == '0') {
+            // must end with '1' and have only 0s in between
+            if (s[n-1] == '1') {
+                int ok = 1;
+                for (int i = 1; i < n-1; i++)
+                    if (s[i] != '0') ok = 0;
+                if (ok) accepted = 1;
+            }
+        } else if (n >= 3 && s[0] == '1' && s[1] == '1') {
+            if (s[n-1] == '1') {
+                int ok = 1;
+                for (int i = 2; i < n-1; i++)
+                    if (s[i] != '0') ok = 0;
+                if (ok) accepted = 1;
+            }
+        }
+    }
+
+    if (accepted)
+        printf("String Accepted\n");
+    else
+        printf("String Rejected\n");
+}
+
+0*1 + 10
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char s[100];
+    printf("Enter a binary string: ");
+    scanf("%s", s);
+
+    int n = strlen(s);
+    int accepted = 0;
+
+    // Case 1: 10
+    if (strcmp(s, "10") == 0)
+        accepted = 1;
+    else {
+        // Case 2: 0*1
+        int i = 0;
+        while (s[i] == '0') i++;
+        if (i == n - 1 && s[i] == '1')
+            accepted = 1;
+    }
+
+    if (accepted)
+        printf("String Accepted\n");
+    else
+        printf("String Rejected\n");
+}
+
+(a+b)*c(a+b)*
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char s[100];
+    printf("Enter a string: ");
+    scanf("%s", s);
+
+    int countC = 0, valid = 1;
+    for (int i = 0; s[i] != '\0'; i++) {
+        if (s[i] == 'c')
+            countC++;
+        else if (s[i] != 'a' && s[i] != 'b')
+            valid = 0;
+    }
+
+    if (valid && countC >= 1)
+        printf("String Accepted\n");
+    else
+        printf("String Rejected\n");
+}
+
