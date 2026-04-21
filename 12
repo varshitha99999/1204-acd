@@ -1,0 +1,98 @@
+#include <stdio.h>
+#include <string.h>
+
+char stack[50], input[50];
+int top = -1, i = 0;
+
+// push into stack
+void push(char c) {
+    stack[++top] = c;
+    stack[top + 1] = '\0';
+}
+
+// reduce function
+void reduce() {
+
+    // F → id
+    if (stack[top] == 'i') {
+        stack[top] = 'F';
+        printf("Reduce: F -> id\n");
+    }
+
+    // T → F
+    if (stack[top] == 'F') {
+        stack[top] = 'T';
+        printf("Reduce: T -> F\n");
+    }
+
+    // E → T
+    if (stack[top] == 'T') {
+        stack[top] = 'E';
+        printf("Reduce: E -> T\n");
+    }
+
+    // T → T*F
+    if (top >= 2 && stack[top] == 'F' &&
+        stack[top - 1] == '*' && stack[top - 2] == 'T') {
+        top -= 2;
+        stack[top] = 'T';
+        printf("Reduce: T -> T*F\n");
+    }
+
+    // E → E+T
+    if (top >= 2 && stack[top] == 'T' &&
+        stack[top - 1] == '+' && stack[top - 2] == 'E') {
+        top -= 2;
+        stack[top] = 'E';
+        printf("Reduce: E -> E+T\n");
+    }
+
+    // F → (E)
+    if (top >= 2 && stack[top] == ')' &&
+        stack[top - 1] == 'E' && stack[top - 2] == '(') {
+        top -= 2;
+        stack[top] = 'F';
+        printf("Reduce: F -> (E)\n");
+    }
+}
+
+// parsing function
+void parse() {
+
+    printf("\nStack\tInput\tAction\n");
+
+    while (1) {
+
+        printf("%s\t%s\t", stack, input + i);
+
+        // SHIFT
+        if (input[i] != '\0') {
+            push(input[i]);
+            printf("Shift %c\n", input[i]);
+            i++;
+            reduce();
+        }
+        else {
+            reduce();
+
+            if (strcmp(stack, "E") == 0) {
+                printf("%s\t%s\tAccepted\n", stack, input + i);
+                break;
+            } else {
+                printf("%s\t%s\tRejected\n", stack, input + i);
+                break;
+            }
+        }
+    }
+}
+
+int main() {
+    printf("Enter input (use 'i' for id): ");
+    scanf("%s", input);
+
+    stack[0] = '\0'; // initialize stack
+
+    parse();
+
+    return 0;
+}
