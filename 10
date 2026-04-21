@@ -1,0 +1,69 @@
+#include <stdio.h>
+
+// static global variable
+static int globalVar = 10;
+
+void display() {
+    static int count = 0; // static local variable
+    count++;
+    printf("Static count = %d\n", count);
+}
+
+int main() {
+    printf("Global static variable = %d\n", globalVar);
+
+    display();
+    display();
+    display();
+
+    return 0;
+}
+
+#include <stdio.h>
+
+void function() {
+    int x = 10;
+    int y = 20;
+
+    printf("Inside function:\n");
+    printf("x = %d, y = %d\n", x, y);
+}
+
+int main() {
+    function();
+    function(); // fresh allocation each time
+    return 0;
+}
+
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    int *ptr;
+    int n, i;
+
+    printf("Enter number of elements: ");
+    scanf("%d", &n);
+
+    // dynamic allocation
+    ptr = (int*)malloc(n * sizeof(int));
+
+    if (ptr == NULL) {
+        printf("Memory allocation failed\n");
+        return 0;
+    }
+
+    printf("Enter elements:\n");
+    for (i = 0; i < n; i++) {
+        scanf("%d", &ptr[i]);
+    }
+
+    printf("Entered elements are:\n");
+    for (i = 0; i < n; i++) {
+        printf("%d ", ptr[i]);
+    }
+
+    free(ptr); // release memory
+    return 0;
+}
