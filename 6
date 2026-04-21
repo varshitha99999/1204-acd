@@ -1,0 +1,139 @@
+Source Code:
+
+    expr.l (Lexer)
+    lex
+
+    %{
+    #include "y.tab.h"
+    %}
+    %%
+    [0-9]+          { return NUMBER; }
+    [a-zA-Z][a-zA-Z0-9]* { return ID; }
+    [\t ]+          ;
+    \n              { return 0; }
+    .               { return yytext[0]; }
+    %%
+    int yywrap() { return 1; }
+
+    
+    expr.y (Parser)
+    yacc
+
+    %{
+    #include<stdio.h>
+    #include<stdlib.h>
+    int yylex();
+    void yyerror(char *s);
+    %}
+    %token NUMBER ID
+    %left '+' '-'
+    %left '*'
+    %%
+    stmt: exp { printf("Valid Expression\n"); exit(0); };
+    exp: exp '+' exp | exp '-' exp | exp '*' exp | '(' exp ')' | NUMBER | ID ;
+    %%
+    void main() { printf("Enter expression: "); yyparse(); }
+    void yyerror(char *s) { printf("Invalid Expression\n"); exit(0); }
+
+
+Compilation Commands:
+
+
+lex expr.l
+yacc -d expr.y
+gcc lex.yy.c y.tab.c -o expr
+./expr
+
+6b
+
+
+var.l
+    lex
+
+    %{
+    #include "y.tab.h"
+    %}
+    %%
+    [a-zA-Z] { return LETTER; }
+    [0-9]    { return DIGIT; }
+    \n       { return 0; }
+    .        { return yytext[0]; }
+    %%
+    int yywrap() { return 1; }
+
+    
+    var.y
+    yacc
+
+    %{
+    #include<stdio.h>
+    #include<stdlib.h>
+    int yylex();
+    void yyerror(char *s);
+    %}
+    %token LETTER DIGIT
+    %%
+    stmt: variable { printf("Valid Variable\n"); exit(0); };
+    variable: LETTER alphanumeric ;
+    alphanumeric: LETTER alphanumeric | DIGIT alphanumeric | ;
+    %%
+    void main() { printf("Enter variable: "); yyparse(); }
+    void yyerror(char *s) { printf("Invalid Variable\n"); exit(0); }
+
+    
+
+Compilation Commands:
+bash
+
+lex var.l && yacc -d var.y
+gcc lex.yy.c y.tab.c -o var
+./var
+
+6c
+
+calc.l
+    lex
+
+    %{
+    #include "y.tab.h"
+    extern int yylval;
+    %}
+    %%
+    [0-9]+ { yylval = atoi(yytext); return NUMBER; }
+    [\t ]+ ;
+    \n     { return 0; }
+    .      { return yytext[0]; }
+    %%
+    int yywrap() { return 1; }
+
+    
+    calc.y
+    yacc
+
+    %{
+    #include<stdio.h>
+    int yylex();
+    void yyerror(char *s);
+    %}
+    %token NUMBER
+    %left '+' '-'
+    %left '*'
+    %%
+    stmt: exp { printf("Result: %d\n", $1); };
+    exp: exp '+' exp { $$ = $1 + $3; }
+
+       | exp '-' exp { $$ = $1 - $3; }
+       | exp '*' exp { $$ = $1 * $3; }
+       | '(' exp ')' { $$ = $2; }
+       | NUMBER      { $$ = $1; };
+    %%
+    void main() { printf("Enter expression: "); yyparse(); }
+    void yyerror(char *s) { printf("Error\n"); }
+
+    
+
+Compilation Commands:
+
+lex calc.l && yacc -d calc.y
+gcc lex.yy.c y.tab.c -o calc
+./calc
