@@ -1,0 +1,118 @@
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+
+char productions[][10] = {
+    "E=E+T",
+    "E=T",
+    "T=T*F",
+    "T=F",
+    "F=(E)",
+    "F=i"
+};
+
+int n = 6;
+
+char first[10];
+char follow[10];
+
+// add element (avoid duplicates)
+void add(char set[], char val) {
+    int i;
+    for(i = 0; set[i] != '\0'; i++) {
+        if(set[i] == val)
+            return;
+    }
+    set[i] = val;
+    set[i+1] = '\0';
+}
+
+// FIRST
+void FIRST(char c) {
+    int i;
+
+    for(i = 0; i < n; i++) {
+        if(productions[i][0] == c) {
+
+            char next = productions[i][2];
+
+            if(!isupper(next)) {
+                add(first, next);
+            }
+            else {
+                FIRST(next);
+            }
+        }
+    }
+}
+
+// FOLLOW
+void FOLLOW(char c) {
+    int i, j;
+
+    if(c == 'E')   // start symbol
+        add(follow, '$');
+
+    for(i = 0; i < n; i++) {
+        for(j = 2; productions[i][j] != '\0'; j++) {
+
+            if(productions[i][j] == c) {
+
+                char next = productions[i][j+1];
+
+                if(next != '\0') {
+                    if(isupper(next)) {
+                        char temp[10] = "";
+                        strcpy(first, "");
+                        FIRST(next);
+
+                        for(int k = 0; first[k] != '\0'; k++)
+                            add(follow, first[k]);
+                    }
+                    else {
+                        add(follow, next);
+                    }
+                }
+
+                if(next == '\0' && c != productions[i][0]) {
+                    FOLLOW(productions[i][0]);
+                }
+            }
+        }
+    }
+}
+
+// print function
+void compute(char c) {
+
+    strcpy(first, "");
+    FIRST(c);
+
+    printf("FIRST(%c) = { ", c);
+    for(int i = 0; first[i] != '\0'; i++)
+        printf("%c ", first[i]);
+    printf("}\n");
+
+    strcpy(follow, "");
+    FOLLOW(c);
+
+    printf("FOLLOW(%c) = { ", c);
+    for(int i = 0; follow[i] != '\0'; i++)
+        printf("%c ", follow[i]);
+    printf("}\n\n");
+}
+
+int main() {
+
+    printf("Grammar:\n");
+    for(int i = 0; i < n; i++)
+        printf("%s\n", productions[i]);
+
+    printf("\n");
+
+    compute('E');
+    compute('T');
+    compute('F');
+
+    return 0;
+}
