@@ -1,0 +1,62 @@
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+
+#define MAX 100
+
+// Function to decide result type
+char resultType(char t1, char t2) {
+    if (t1 == 'f' || t2 == 'f')
+        return 'f';   // float dominates
+    return 'i';       // otherwise int
+}
+
+int main() {
+    char expr[MAX];
+    char var[10], type[10];
+    char stack[MAX];
+    int n, i, j, top = -1;
+
+    printf("Enter number of variables: ");
+    scanf("%d", &n);
+
+    printf("Enter variable names:\n");
+    for (i = 0; i < n; i++) {
+        scanf(" %c", &var[i]);
+    }
+
+    printf("Enter corresponding types (i for int, f for float):\n");
+    for (i = 0; i < n; i++) {
+        scanf(" %c", &type[i]);
+    }
+
+    printf("Enter expression (e.g., a+b*c): ");
+    scanf("%s", expr);
+
+    // Process expression
+    for (i = 0; i < strlen(expr); i++) {
+        if (isalpha(expr[i])) {
+            // find type of variable
+            for (j = 0; j < n; j++) {
+                if (var[j] == expr[i]) {
+                    stack[++top] = type[j];
+                    break;
+                }
+            }
+        }
+        else if (expr[i] == '+' || expr[i] == '-' || expr[i] == '*' || expr[i] == '/') {
+            char t2 = stack[top--];
+            char t1 = stack[top--];
+            char res = resultType(t1, t2);
+            stack[++top] = res;
+        }
+    }
+
+    printf("\nFinal Type of Expression: ");
+    if (stack[top] == 'i')
+        printf("int\n");
+    else
+        printf("float\n");
+
+    return 0;
+}
