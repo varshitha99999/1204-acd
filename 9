@@ -1,0 +1,84 @@
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+#include <stdlib.h>
+
+char input[100];
+int i = 0;
+
+// Function declarations
+void E();
+void Eprime();
+void T();
+void Tprime();
+void F();
+
+// Match function
+void match(char expected) {
+    if (input[i] == expected)
+        i++;
+    else {
+        printf("Error: Unexpected symbol '%c'\n", input[i]);
+        exit(0);
+    }
+}
+
+// E → T E'
+void E() {
+    T();
+    Eprime();
+}
+
+// E' → + T E' | ε
+void Eprime() {
+    if (input[i] == '+') {
+        match('+');
+        T();
+        Eprime();
+    }
+}
+
+// T → F T'
+void T() {
+    F();
+    Tprime();
+}
+
+// T' → * F T' | ε
+void Tprime() {
+    if (input[i] == '*') {
+        match('*');
+        F();
+        Tprime();
+    }
+}
+
+// F → (E) | id
+void F() {
+    if (input[i] == '(') {
+        match('(');
+        E();
+        match(')');
+    }
+    else if (isalnum(input[i])) {
+        match(input[i]);  // id
+    }
+    else {
+        printf("Error: Invalid symbol '%c'\n", input[i]);
+        exit(0);
+    }
+}
+
+int main() {
+    printf("Enter expression: ");
+    scanf("%s", input);
+
+    E();
+
+    if (input[i] == '\0')
+        printf("String is successfully parsed\n");
+    else
+        printf("Error in parsing\n");
+
+    return 0;
+}
